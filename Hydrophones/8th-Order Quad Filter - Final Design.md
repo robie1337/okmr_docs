@@ -67,6 +67,15 @@ Load `filter_sim/filter_wizard_8th_order_quad.json`, or enter the settings by ha
 
 The Wizard draws the same four stages (19.0 / 24.2 / 37.1 / 47.2 kHz), so its plot matches. It picks its own component values, though, not 2.2 nF everywhere. The exact circuit is in `bp8_quad.cir`.
 
+> [!warning] Why the Wizard's Components/Tolerances V/V plot looks lopsided
+> Checked 2026-10-27 by reading the Wizard's plotted curve data:
+> - The ideal plot on the Specifications tab is a symmetric 8th-order Butterworth.
+> - The plots on the Components and Tolerances tabs ramp from **3.0 V/V at 20 kHz** to **8.9 V/V at 45 kHz**.
+> - That ramp is the same no matter which parts the Wizard picks (E6 or E96 caps, AD8608 or AD8515). So the plot isn't actually simulating the listed parts.
+> - LTspice with the real AD8608 and the Wizard's own listed parts gives **8.0 → 10 V/V**, close to flat.
+> - The Wizard's curve matches the listed circuit exactly if its **two-resistor stages (C and D, unequal caps 2.2n/3.3n) are treated as if both caps were the smaller value**. The same thing turns the old 10th-order design (stages A and D had 3.9/4.7n and 4.7/12n) into 2.9 → 7.2 V/V on the plot, while LTspice gives it a flat 9.5 V/V.
+> - **Don't sign off on the Wizard's real-parts V/V plot when it uses two-resistor MFB stages. Check in LTspice.** Our design uses only three-resistor, equal-cap stages, so it isn't affected.
+
 ## LTspice (`filter_sim/bp8_quad.cir`)
 
 | Op amp | 25 / 30 / 35 / 40 kHz | −3 dB band | Verdict |
