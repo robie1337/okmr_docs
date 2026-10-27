@@ -20,16 +20,16 @@
 		"components": {
 			"vsPlus": 3.3,
 			"vsMinus": 0,
-			"optimization": "Noise",
-			"optimizationPreference": "nonSpecific",
+			"optimization": "RecommendedSpecificComponents",
+			"optimizationPreference": "specific",
 			"compensateForGbw": false,
 			"preferredAlgorithms": {"sallenKey|lowPass": "lowpassV2"},
 			"referenceVoltage": 1.65,
 			"stages": [
-				{"stageLetter": "A", "componentSizing": 50, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
-				{"stageLetter": "B", "componentSizing": 50, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
-				{"stageLetter": "C", "componentSizing": 50, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
-				{"stageLetter": "D", "componentSizing": 50, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"}
+				{"stageLetter": "A", "componentSizing": 80, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
+				{"stageLetter": "B", "componentSizing": 80, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
+				{"stageLetter": "C", "componentSizing": 80, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"},
+				{"stageLetter": "D", "componentSizing": 80, "gain": -1, "gainEnabled": false, "implementation": "deliyannisFriend", "opAmps": "AD8608"}
 			],
 			"recommendedAmps": [],
 			"sortOrder": [0, 1, 2, 3]
