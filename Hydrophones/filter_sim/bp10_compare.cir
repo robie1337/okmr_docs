@@ -1,0 +1,77 @@
+* 10th-order Butterworth BP (30 kHz centre, 30 kHz BW, 20 dB), 3.3 V single supply, VREF 1.65 V
+* Wizard design (JSON (2): E12 caps, E24 resistors) vs redesign (E6 C0G caps, E96 resistors)
+V1 in vref AC 1
+Vref vref 0 DC 1.65
+Vdd vdd 0 DC 3.3
+* MFB bandpass: R1 in->n1, R2 n1->VREF, Ca n1->out, Cb n1->inv, R5 inv->out
+.subckt MFB_LT in out vref vdd params: R1=1k R2=1G R5=1k Ca=1n Cb=1n
+R1 in n1 {R1}
+R2 n1 vref {R2}
+Ca n1 out {Ca}
+Cb n1 inv {Cb}
+R5 inv out {R5}
+XU vref inv out vdd 0 0 LT6233
+.ends
+.subckt MFB_AD in out vref vdd params: R1=1k R2=1G R5=1k Ca=1n Cb=1n
+R1 in n1 {R1}
+R2 n1 vref {R2}
+Ca n1 out {Ca}
+Cb n1 inv {Cb}
+R5 inv out {R5}
+XU vref inv vdd 0 out AD8608
+.ends
+* Wizard, chain order D A C B E, LT6233
+XW1 in w1 vref vdd MFB_LT R1=360 R5=2.4k Ca=3.9n Cb=4.7n
+XW2 w1 w2 vref vdd MFB_LT R1=300 R5=1.5k Ca=4.7n Cb=12n
+XW3 w2 w3 vref vdd MFB_LT R1=1k R2=160 R5=7.5k Ca=8.2n Cb=8.2n
+XW4 w3 w4 vref vdd MFB_LT R1=1k R2=160 R5=7.5k Ca=3.3n Cb=3.3n
+XW5 w4 wiz vref vdd MFB_LT R1=1k R2=620 R5=2.4k Ca=8.2n Cb=8.2n
+* Redesign (E96 R, C0G caps), lowest Q first, LT6233
+XN1 in n1 vref vdd MFB_LT R1=634 R2=5.11k R5=2.26k Ca=4.7n Cb=4.7n
+XN2 n1 n2 vref vdd MFB_LT R1=665 R2=5.49k R5=4.02k Ca=4.7n Cb=4.7n
+XN3 n2 n3 vref vdd MFB_LT R1=357 R2=2.8k R5=2.15k Ca=4.7n Cb=4.7n
+XN4 n3 n4 vref vdd MFB_LT R1=8.25k R2=1.37k R5=60.4k Ca=1n Cb=1n
+XN5 n4 new vref vdd MFB_LT R1=3.24k R2=549 R5=23.7k Ca=1n Cb=1n
+* Same redesign on AD8608 (10 MHz quad)
+XA1 in a1 vref vdd MFB_AD R1=634 R2=5.11k R5=2.26k Ca=4.7n Cb=4.7n
+XA2 a1 a2 vref vdd MFB_AD R1=665 R2=5.49k R5=4.02k Ca=4.7n Cb=4.7n
+XA3 a2 a3 vref vdd MFB_AD R1=357 R2=2.8k R5=2.15k Ca=4.7n Cb=4.7n
+XA4 a3 a4 vref vdd MFB_AD R1=8.25k R2=1.37k R5=60.4k Ca=1n Cb=1n
+XA5 a4 newad vref vdd MFB_AD R1=3.24k R2=549 R5=23.7k Ca=1n Cb=1n
+.lib LTC2.lib
+.lib ADI.lib
+.ac dec 400 1k 1Meg
+.save V(in) V(vref) V(wiz) V(new) V(newad) V(n1) V(n2) V(n3) V(n4) V(w1) V(w2) V(w3) V(w4)
+.meas AC wiz_pk MAX mag(V(wiz))
+.meas AC wiz_fpk WHEN mag(V(wiz))=wiz_pk
+.meas AC wiz_lo WHEN mag(V(wiz))=wiz_pk/sqrt(2) CROSS=1
+.meas AC wiz_hi WHEN mag(V(wiz))=wiz_pk/sqrt(2) CROSS=LAST
+.meas AC wiz_20k FIND mag(V(wiz)) AT 20k
+.meas AC wiz_25k FIND mag(V(wiz)) AT 25k
+.meas AC wiz_30k FIND mag(V(wiz)) AT 30k
+.meas AC wiz_35k FIND mag(V(wiz)) AT 35k
+.meas AC wiz_40k FIND mag(V(wiz)) AT 40k
+.meas AC wiz_10k FIND mag(V(wiz)) AT 10k
+.meas AC wiz_90k FIND mag(V(wiz)) AT 90k
+.meas AC new_pk MAX mag(V(new))
+.meas AC new_fpk WHEN mag(V(new))=new_pk
+.meas AC new_lo WHEN mag(V(new))=new_pk/sqrt(2) CROSS=1
+.meas AC new_hi WHEN mag(V(new))=new_pk/sqrt(2) CROSS=LAST
+.meas AC new_20k FIND mag(V(new)) AT 20k
+.meas AC new_25k FIND mag(V(new)) AT 25k
+.meas AC new_30k FIND mag(V(new)) AT 30k
+.meas AC new_35k FIND mag(V(new)) AT 35k
+.meas AC new_40k FIND mag(V(new)) AT 40k
+.meas AC new_10k FIND mag(V(new)) AT 10k
+.meas AC new_90k FIND mag(V(new)) AT 90k
+.meas AC newad_pk MAX mag(V(newad))
+.meas AC newad_lo WHEN mag(V(newad))=newad_pk/sqrt(2) CROSS=1
+.meas AC newad_hi WHEN mag(V(newad))=newad_pk/sqrt(2) CROSS=LAST
+.meas AC newad_25k FIND mag(V(newad)) AT 25k
+.meas AC newad_30k FIND mag(V(newad)) AT 30k
+.meas AC newad_40k FIND mag(V(newad)) AT 40k
+.meas AC n1_pk MAX mag(V(n1))
+.meas AC n2_pk MAX mag(V(n2))
+.meas AC n3_pk MAX mag(V(n3))
+.meas AC n4_pk MAX mag(V(n4))
+.end

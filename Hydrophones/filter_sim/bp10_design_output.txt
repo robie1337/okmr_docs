@@ -1,0 +1,38 @@
+Ideal Butterworth biquads (f0 Hz, Q): [(np.float64(18873.464), np.float64(3.5898)), (np.float64(21929.863), np.float64(1.2972)), (np.float64(30000.0), np.float64(1.0)), (np.float64(41039.928), np.float64(1.2972)), (np.float64(47686.0), np.float64(3.5898))]
+
+Wizard stages: f0 / Q   vs ideal
+  D:  39.99 kHz Q 1.29   ideal  41.04 kHz Q 1.30   f0 err  -2.6%  Q err  -0.9%
+  A:  31.59 kHz Q 1.01   ideal  30.00 kHz Q 1.00   f0 err  +5.3%  Q err  +0.6%
+  C:  19.08 kHz Q 3.69   ideal  18.87 kHz Q 3.59   f0 err  +1.1%  Q err  +2.7%
+  B:  47.42 kHz Q 3.69   ideal  47.69 kHz Q 3.59   f0 err  -0.6%  Q err  +2.7%
+  E:  20.25 kHz Q 1.25   ideal  21.93 kHz Q 1.30   f0 err  -7.7%  Q err  -3.5%
+
+Ideal Butterworth            peak  20.0 dB @  30.0 kHz | -3 dB  18.5- 48.5 kHz | 20k: -0.7 25k: -0.0 30k: +0.0 35k: -0.0 40k: -0.0 45k: -0.7
+Wizard (E12 C, E24 R)        peak  20.0 dB @  21.2 kHz | -3 dB  18.5- 48.2 kHz | 20k: -0.3 25k: -0.4 30k: -0.4 35k: -0.3 40k: -0.2 45k: -0.8
+Redesign, E24 R + E6 C0G     peak  21.4 dB @  39.5 kHz | -3 dB  18.7- 48.6 kHz | 20k: -0.8 25k: -0.1 30k: -0.1 35k: -0.0 40k: -0.0 45k: -0.6
+Redesign, E96 R + E6 C0G     peak  20.1 dB @  24.1 kHz | -3 dB  18.6- 48.4 kHz | 20k: -0.7 25k: -0.0 30k: -0.0 35k: -0.0 40k: -0.1 45k: -0.8
+
+Redesign E24 resistors (R1 in, R2 to VREF, R5 feedback, C both):
+  S3: R1      620  R2    8200  R5     2200  C  4.7 nF   f0  30.07 kHz  Q 0.98  gain  1.77
+  S2: R1      680  R2    6200  R5     3900  C  4.7 nF   f0  21.90 kHz  Q 1.26  gain  2.87
+  S4: R1     1600  R2   24000  R5    10000  C  1.0 nF   f0  41.09 kHz  Q 1.29  gain  3.12
+  S1: R1     3900  R2     620  R5    27000  C  2.2 nF   f0  19.04 kHz  Q 3.55  gain  3.46
+  S5: R1     2700  R2     560  R5    24000  C  1.0 nF   f0  47.70 kHz  Q 3.60  gain  4.44
+  total mid-band gain 21.4 dB
+
+Redesign E96 resistors (R1 in, R2 to VREF, R5 feedback, C both):
+  S3: R1      634  R2    5110  R5     2260  C  4.7 nF   f0  29.99 kHz  Q 1.00  gain  1.78
+  S2: R1      665  R2    5490  R5     4020  C  4.7 nF   f0  21.93 kHz  Q 1.30  gain  3.02
+  S4: R1      357  R2    2800  R5     2150  C  4.7 nF   f0  41.04 kHz  Q 1.30  gain  3.01
+  S1: R1     8250  R2    1370  R5    60400  C  1.0 nF   f0  18.89 kHz  Q 3.58  gain  3.66
+  S5: R1     3240  R2     549  R5    23700  C  1.0 nF   f0  47.71 kHz  Q 3.55  gain  3.66
+  total mid-band gain 20.1 dB
+
+Monte Carlo (500 runs, normal, tol = 3 sigma). Phase = worst pair among 4 channels, 95th percentile.
+  Wizard, 1% R / 10% C           25k-40k tilt -0.18 ± 0.66 dB | 25k 17.6° (1.95 µs) 30k 15.8° (1.46 µs) 35k 17.0° (1.35 µs) 40k 22.4° (1.56 µs)
+  Redesign E24, 1% R / 10% C     25k-40k tilt -0.10 ± 0.60 dB | 25k 17.2° (1.91 µs) 30k 16.8° (1.56 µs) 35k 18.3° (1.45 µs) 40k 22.4° (1.56 µs)
+  Redesign E24, 1% R / 5% C0G    25k-40k tilt -0.09 ± 0.31 dB | 25k  8.6° (0.96 µs) 30k  8.5° (0.79 µs) 35k  9.2° (0.73 µs) 40k 11.3° (0.78 µs)
+  Redesign E24, 1% R / 2% C0G    25k-40k tilt -0.09 ± 0.14 dB | 25k  3.7° (0.41 µs) 30k  3.6° (0.34 µs) 35k  3.8° (0.31 µs) 40k  4.7° (0.33 µs)
+  Redesign E96, 1% R / 5% C0G    25k-40k tilt +0.06 ± 0.31 dB | 25k  8.7° (0.97 µs) 30k  8.7° (0.80 µs) 35k  9.3° (0.74 µs) 40k 11.3° (0.78 µs)
+
+Saved bp10_nominal.png, bp10_montecarlo.png
