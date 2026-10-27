@@ -12,6 +12,7 @@ Acoustic pinger localisation for the AUV: the analog front end (preamp → 8th-o
 
 ## Files
 - `Attachments/`: original preamp schematic and the labelled reference diagram
+- `filter_sim/Hydrophone_8th_Order_Quad_Filter.asc`: **the final filter in LTspice** (open and press Run; plots V/V)
 - `filter_sim/`: LTspice schematics (`.asc`, open and press Run), batch netlists (`.cir`, run with `LTspice.exe -b <file>`), result plots, and the Analog Devices Filter Wizard settings (`filter_wizard_spec.json`, `filter_wizard_final.json`)
 
 ## Key takeaways

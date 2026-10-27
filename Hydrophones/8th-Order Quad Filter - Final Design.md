@@ -76,7 +76,17 @@ The Wizard draws the same four stages (19.0 / 24.2 / 37.1 / 47.2 kHz), so its pl
 > - The Wizard's curve matches the listed circuit exactly if its **two-resistor stages (C and D, unequal caps 2.2n/3.3n) are treated as if both caps were the smaller value**. The same thing turns the old 10th-order design (stages A and D had 3.9/4.7n and 4.7/12n) into 2.9 → 7.2 V/V on the plot, while LTspice gives it a flat 9.5 V/V.
 > - **Don't sign off on the Wizard's real-parts V/V plot when it uses two-resistor MFB stages. Check in LTspice.** Our design uses only three-resistor, equal-cap stages, so it isn't affected.
 
-## LTspice (`filter_sim/bp8_quad.cir`)
+## LTspice schematic (open it and press Run)
+`filter_sim/Hydrophone_8th_Order_Quad_Filter.asc` is the full circuit drawn in LTspice: one AD8608 section per stage (A → D, left to right) with labelled nets `in → s1 → s2 → s3 → out`, plus V1 (AC 1), Vref (1.65 V) and Vdd (3.3 V).
+- The `.plt` file next to it opens `V(out)` on a **linear V/V** axis automatically.
+- **Ctrl+L** shows the measurements: peak 19.98 dB, −3 dB at 18.5–48.0 kHz, and 19.80 / 19.86 / 19.96 dB at 25 / 30 / 40 kHz.
+- Regenerate it with `python make_bp8_asc.py` after changing values.
+
+![[bp8_ltspice_vv.png]]
+
+The V/V curve is symmetric on the log axis, with a flat top of about 9.8–10 V/V from ~20 to ~45 kHz. This is what the Wizard's lopsided real-parts plot (below) should have shown.
+
+## LTspice netlist (`filter_sim/bp8_quad.cir`)
 
 | Op amp | 25 / 30 / 35 / 40 kHz | −3 dB band | Verdict |
 |---|---|---|---|
