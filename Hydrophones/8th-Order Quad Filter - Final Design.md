@@ -31,6 +31,42 @@ JLCPCB stock checked 2026-10-27, all Yageo C0G/NP0 50 V 0603:
 
 A 4-channel board uses 32 of them, so the ±1% part costs about **$1.50 total**. It's one extended part (one setup fee). The ±1% caps are cheap here because 2.2 nF happens to be stocked at that tolerance. Avoid the X7R "basic" parts.
 
+## Mouser Canada BOM (stock checked 2026-10-27)
+Per channel: 1 op-amp section, 8 caps, 12 resistors. A 4-channel board needs 1 AD8608, 32 caps, and 4 of each resistor.
+
+| Part | Use | Mouser # | Stock | Note |
+|---|---|---|---|---|
+| **AD8608ARZ** (SOIC-14) | quad op amp | 584-AD8608ARZ | 445 | CA$10.54 (CA$8.11 @10). Mouser only lists SOIC-14, not TSSOP. Check the board footprint |
+| **Murata GCM1885C1H222FA16J** | 2.2 nF ±1% C0G 0603, 50 V | 81-GCM1885C1H222FA6J | ~9.2k | ~CA$0.18 @50 |
+| alt: Vishay VJ0603A222FXJCW1BC | 2.2 nF ±1% C0G 0603, 16 V | 77-VJ0603A222FXJCBC | ~9.8k | CA$0.24 @100 |
+| ~~Yageo CC0603FRNPO9BN222~~ | (the JLC part) | 603-CC0603FRNPO9BN22 | **0** | backordered to 2027-03-30 |
+| Yageo RC0603FR-071K05L | 1.05k | | 391k | |
+| Yageo RC0603FR-071K58L | 1.58k | | 24k | |
+| Yageo RC0603FR-072K32L | 2.32k | | 25k | |
+| Yageo RC0603FR-07909RL | 909 Ω | | 2.1k | |
+| Yageo RC0603FR-076K65L | 6.65k | | 871k | |
+| **Panasonic ERJ-3EKF5491V** | 5.49k | 667-ERJ-3EKF5491V | 49k | Yageo 5.49k out of stock |
+| Panasonic ERJ-3EKF4321V | 4.32k | | 46.5k | |
+| Panasonic ERJ-3EKF8871V | 8.87k | | 25k | |
+| Panasonic ERJ-3EKF2212V | 22.1k | | 78k | |
+| Panasonic ERJ-3EKF3740V | 374 Ω | | 5.5k | |
+
+All resistors are 0603 1% 100 ppm thick film. Yageo RC and Panasonic ERJ-3EKF parts are interchangeable.
+
+## Seeing it in the ADI Filter Wizard
+Load `filter_sim/filter_wizard_8th_order_quad.json`, or enter the settings by hand:
+- Band Pass
+- Gain 20 dB
+- Passband −3 dB at **30k** (this is the bandwidth)
+- Stopband −40 dB at **100k** (95k–139k gives 8th order; 80k forces 10th)
+- Centre 30k
+- Butterworth (slider in the middle)
+- 3.3 V / 0 V, VREF 1.65 V
+- Every stage Multiple Feedback (Deliyannis-Friend) on **AD8608**
+- Tolerances 1% / 1%, series E6 caps / E96 resistors
+
+The Wizard draws the same four stages (19.0 / 24.2 / 37.1 / 47.2 kHz), so its plot matches. It picks its own component values, though, not 2.2 nF everywhere. The exact circuit is in `bp8_quad.cir`.
+
 ## LTspice (`filter_sim/bp8_quad.cir`)
 
 | Op amp | 25 / 30 / 35 / 40 kHz | −3 dB band | Verdict |
