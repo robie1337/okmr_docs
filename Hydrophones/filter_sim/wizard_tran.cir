@@ -1,0 +1,26 @@
+* Wizard design: 30 kHz tone, input amplitude stepped, check clipping
+.param tolR=0 tolC=0 A=0.05
+.step param A list 0.05 0.1 0.14 0.2
+V1 in vref SINE(0 {A} 30k)
+Vref vref 0 DC 1.65
+Vdd vdd 0 DC 3.3
+.subckt MFBR in out vref vdd params: R1=1k R2=1k R3=1G C=1n
+R1 in n1 {mc(R1,tolR)}
+R3 n1 vref {mc(R3,tolR)}
+Ca n1 out {mc(C,tolC)}
+Cb n1 inv {mc(C,tolC)}
+R2 inv out {mc(R2,tolR)}
+XU vref inv vdd 0 out AD8608
+.ends
+XW1 in w1 vref vdd MFBR R1=10.9k R3=1.74k R2=67.8k C=360p
+XW2 w1 w2 vref vdd MFBR R1=11.1k R3=1.78k R2=69.6k C=750p
+XW3 w2 w3 vref vdd MFBR R1=4.39k R3=39.2k R2=27.4k C=430p
+XW4 w3 wiz vref vdd MFBR R1=4.29k R3=38.3k R2=26.8k C=620p
+.lib ADI.lib
+.tran 0 3m 2m 0.2u
+.meas TRAN vout_max MAX V(wiz)
+.meas TRAN vout_min MIN V(wiz)
+.meas TRAN w1_max MAX V(w1)
+.meas TRAN w2_max MAX V(w2)
+.meas TRAN w3_max MAX V(w3)
+.end

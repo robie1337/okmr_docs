@@ -1,0 +1,102 @@
+* Filter Wizard design (Updated 8th Order Filter Design (1).json), 3.3 V single supply, VREF 1.65 V
+* Compare: Wizard + real AD8608 model | Wizard + 1 MHz op amp (MCP6L04) | my design + AD8608 | current board + MCP6L04
+V1 in vref AC 1
+Vref vref 0 DC 1.65
+Vdd vdd 0 DC 3.3
+.subckt MFBR in out vref vdd params: R1=1k R2=1k R3=1G C=1n
+R1 in n1 {R1}
+R3 n1 vref {R3}
+Ca n1 out {C}
+Cb n1 inv {C}
+R2 inv out {R2}
+XU vref inv vdd 0 out AD8608
+.ends
+.subckt MFBU in out vref vdd params: R1=1k R2=1k R3=1G C=1n GBW=1Meg
+R1 in n1 {R1}
+R3 n1 vref {R3}
+Ca n1 out {C}
+Cb n1 inv {C}
+R2 inv out {R2}
+XU vref inv vdd 0 out level2 Avol=1Meg GBW={GBW} Slew=0.5Meg Ilimit=25m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg
+.ends
+* Wizard design, real AD8608
+XW1 in w1 vref vdd MFBR R1=10.9k R3=1.74k R2=67.8k C=360p
+XW2 w1 w2 vref vdd MFBR R1=11.1k R3=1.78k R2=69.6k C=750p
+XW3 w2 w3 vref vdd MFBR R1=4.39k R3=39.2k R2=27.4k C=430p
+XW4 w3 wiz vref vdd MFBR R1=4.29k R3=38.3k R2=26.8k C=620p
+* Wizard design, 1 MHz op amp (MCP6L04 class)
+XM1 in m1 vref vdd MFBU R1=10.9k R3=1.74k R2=67.8k C=360p
+XM2 m1 m2 vref vdd MFBU R1=11.1k R3=1.78k R2=69.6k C=750p
+XM3 m2 m3 vref vdd MFBU R1=4.39k R3=39.2k R2=27.4k C=430p
+XM4 m3 wizmcp vref vdd MFBU R1=4.29k R3=38.3k R2=26.8k C=620p
+* My hand design, real AD8608
+XN1 in p1 vref vdd MFBR R1=2.67k R3=23.7k R2=16.5k C=1n
+XN2 p1 p2 vref vdd MFBR R1=1.87k R3=16.5k R2=11.8k C=1n
+XN3 p2 p3 vref vdd MFBR R1=8.45k R3=1.33k R2=52.3k C=1n
+XN4 p3 mine vref vdd MFBR R1=3.92k R3=619 R2=24.3k C=1n
+* Current board, MCP6L04 class
+XA in o1 vref vdd MFBU R1=4.7k R3=10k R2=12k C=1n
+XB o1 o2 vref vdd MFBU R1=2.2k R3=680 R2=12k C=1n
+XC o2 o3 vref vdd MFBU R1=2.2k R3=680 R2=39k C=1n
+XD o3 old vref vdd MFBU R1=1.2k R3=1G R2=4.7k C=1n
+.lib ADI.lib
+.lib UniversalOpAmp2.lib
+.ac dec 400 1k 1Meg
+.save V(in) V(vref) V(wiz) V(wizmcp) V(mine) V(old) V(w1) V(w2) V(w3)
+.meas AC wiz_pk MAX mag(V(wiz))
+.meas AC wiz_fpk WHEN mag(V(wiz))=wiz_pk
+.meas AC wiz_lo WHEN mag(V(wiz))=wiz_pk/sqrt(2) CROSS=1
+.meas AC wiz_hi WHEN mag(V(wiz))=wiz_pk/sqrt(2) CROSS=LAST
+.meas AC wiz_5k FIND mag(V(wiz)) AT 5k
+.meas AC wiz_10k FIND mag(V(wiz)) AT 10k
+.meas AC wiz_20k FIND mag(V(wiz)) AT 20k
+.meas AC wiz_25k FIND mag(V(wiz)) AT 25k
+.meas AC wiz_30k FIND mag(V(wiz)) AT 30k
+.meas AC wiz_35k FIND mag(V(wiz)) AT 35k
+.meas AC wiz_40k FIND mag(V(wiz)) AT 40k
+.meas AC wiz_45k FIND mag(V(wiz)) AT 45k
+.meas AC wiz_90k FIND mag(V(wiz)) AT 90k
+.meas AC wiz_200k FIND mag(V(wiz)) AT 200k
+.meas AC wizmcp_pk MAX mag(V(wizmcp))
+.meas AC wizmcp_fpk WHEN mag(V(wizmcp))=wizmcp_pk
+.meas AC wizmcp_lo WHEN mag(V(wizmcp))=wizmcp_pk/sqrt(2) CROSS=1
+.meas AC wizmcp_hi WHEN mag(V(wizmcp))=wizmcp_pk/sqrt(2) CROSS=LAST
+.meas AC wizmcp_5k FIND mag(V(wizmcp)) AT 5k
+.meas AC wizmcp_10k FIND mag(V(wizmcp)) AT 10k
+.meas AC wizmcp_20k FIND mag(V(wizmcp)) AT 20k
+.meas AC wizmcp_25k FIND mag(V(wizmcp)) AT 25k
+.meas AC wizmcp_30k FIND mag(V(wizmcp)) AT 30k
+.meas AC wizmcp_35k FIND mag(V(wizmcp)) AT 35k
+.meas AC wizmcp_40k FIND mag(V(wizmcp)) AT 40k
+.meas AC wizmcp_45k FIND mag(V(wizmcp)) AT 45k
+.meas AC wizmcp_90k FIND mag(V(wizmcp)) AT 90k
+.meas AC wizmcp_200k FIND mag(V(wizmcp)) AT 200k
+.meas AC mine_pk MAX mag(V(mine))
+.meas AC mine_fpk WHEN mag(V(mine))=mine_pk
+.meas AC mine_lo WHEN mag(V(mine))=mine_pk/sqrt(2) CROSS=1
+.meas AC mine_hi WHEN mag(V(mine))=mine_pk/sqrt(2) CROSS=LAST
+.meas AC mine_5k FIND mag(V(mine)) AT 5k
+.meas AC mine_10k FIND mag(V(mine)) AT 10k
+.meas AC mine_20k FIND mag(V(mine)) AT 20k
+.meas AC mine_25k FIND mag(V(mine)) AT 25k
+.meas AC mine_30k FIND mag(V(mine)) AT 30k
+.meas AC mine_35k FIND mag(V(mine)) AT 35k
+.meas AC mine_40k FIND mag(V(mine)) AT 40k
+.meas AC mine_45k FIND mag(V(mine)) AT 45k
+.meas AC mine_90k FIND mag(V(mine)) AT 90k
+.meas AC mine_200k FIND mag(V(mine)) AT 200k
+.meas AC old_pk MAX mag(V(old))
+.meas AC old_fpk WHEN mag(V(old))=old_pk
+.meas AC old_lo WHEN mag(V(old))=old_pk/sqrt(2) CROSS=1
+.meas AC old_hi WHEN mag(V(old))=old_pk/sqrt(2) CROSS=LAST
+.meas AC old_5k FIND mag(V(old)) AT 5k
+.meas AC old_10k FIND mag(V(old)) AT 10k
+.meas AC old_20k FIND mag(V(old)) AT 20k
+.meas AC old_25k FIND mag(V(old)) AT 25k
+.meas AC old_30k FIND mag(V(old)) AT 30k
+.meas AC old_35k FIND mag(V(old)) AT 35k
+.meas AC old_40k FIND mag(V(old)) AT 40k
+.meas AC old_45k FIND mag(V(old)) AT 45k
+.meas AC old_90k FIND mag(V(old)) AT 90k
+.meas AC old_200k FIND mag(V(old)) AT 200k
+.end

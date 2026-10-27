@@ -1,0 +1,48 @@
+* Hydrophone 8th-order bandpass: current [1B] board vs new Butterworth (30 kHz, 25 kHz BW, 20 dB)
+* Single 3.3 V supply, VREF = 1.65 V (AC ground). Op amp GBW stepped:
+*   1 MHz = MCP6L04 (on board now), 10 MHz = AD8608, 1 GHz = ideal
+.param GBW=1Meg
+.step param GBW list 1Meg 10Meg 1G
+V1 in vref AC 1
+Vref vref 0 DC 1.65
+Vdd vdd 0 DC 3.3
+.subckt MFB in out vref vdd params: R1=1k R2=1k R3=1G C=1n
+R1 in n1 {R1}
+R3 n1 vref {R3}
+Ca n1 out {C}
+Cb n1 inv {C}
+R2 inv out {R2}
+XU vref inv vdd 0 out level2 Avol=1Meg GBW={GBW} Slew=1Meg Ilimit=25m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg
+.ends
+* ---- current board (R6/R10/R2, R7/R11/R3, R8/R12/R4, R9/R5) ----
+XA in o1 vref vdd MFB R1=4.7k R3=10k R2=12k C=1n
+XB o1 o2 vref vdd MFB R1=2.2k R3=680 R2=12k C=1n
+XC o2 o3 vref vdd MFB R1=2.2k R3=680 R2=39k C=1n
+XD o3 old vref vdd MFB R1=1.2k R3=1G R2=4.7k C=1n
+* ---- new Butterworth, E96 values, lowest Q first ----
+XN1 in p1 vref vdd MFB R1=2.67k R3=23.7k R2=16.5k C=1n
+XN2 p1 p2 vref vdd MFB R1=1.87k R3=16.5k R2=11.8k C=1n
+XN3 p2 p3 vref vdd MFB R1=8.45k R3=1.33k R2=52.3k C=1n
+XN4 p3 new vref vdd MFB R1=3.92k R3=619 R2=24.3k C=1n
+.lib UniversalOpAmp2.lib
+.ac dec 400 1k 1Meg
+.meas AC old_pk MAX mag(V(old))
+.meas AC old_fpk WHEN mag(V(old))=old_pk
+.meas AC old_lo WHEN mag(V(old))=old_pk/sqrt(2) CROSS=1
+.meas AC old_hi WHEN mag(V(old))=old_pk/sqrt(2) CROSS=LAST
+.meas AC new_pk MAX mag(V(new))
+.meas AC new_lo WHEN mag(V(new))=new_pk/sqrt(2) CROSS=1
+.meas AC new_hi WHEN mag(V(new))=new_pk/sqrt(2) CROSS=LAST
+.meas AC old_5k FIND mag(V(old)) AT 5k
+.meas AC old_10k FIND mag(V(old)) AT 10k
+.meas AC old_25k FIND mag(V(old)) AT 25k
+.meas AC old_30k FIND mag(V(old)) AT 30k
+.meas AC old_40k FIND mag(V(old)) AT 40k
+.meas AC old_90k FIND mag(V(old)) AT 90k
+.meas AC new_5k FIND mag(V(new)) AT 5k
+.meas AC new_10k FIND mag(V(new)) AT 10k
+.meas AC new_25k FIND mag(V(new)) AT 25k
+.meas AC new_30k FIND mag(V(new)) AT 30k
+.meas AC new_40k FIND mag(V(new)) AT 40k
+.meas AC new_90k FIND mag(V(new)) AT 90k
+.end
