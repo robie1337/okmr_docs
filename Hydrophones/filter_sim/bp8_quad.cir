@@ -1,0 +1,74 @@
+* 8th-order Butterworth BP for ONE quad op amp (30 kHz centre, 30 kHz BW, 20 dB)
+* All caps 2.2 nF C0G (Yageo CC0603FRNPO9BN222 / C576780, +-1%), resistors 1% E96
+* 3.3 V single supply, VREF 1.65 V. Compares AD8608 (10 MHz quad), a 1 MHz quad (MCP6L04 class), LT6233 (60 MHz ref)
+V1 in vref AC 1
+Vref vref 0 DC 1.65
+Vdd vdd 0 DC 3.3
+* MFB bandpass: R1 in->n1, R2 n1->VREF, Ca n1->out, Cb n1->inv, R5 inv->out
+.subckt MFB_AD in out vref vdd params: R1=1k R2=1G R5=1k C=2.2n
+R1 in n1 {R1}
+R2 n1 vref {R2}
+Ca n1 out {C}
+Cb n1 inv {C}
+R5 inv out {R5}
+XU vref inv vdd 0 out AD8608
+.ends
+.subckt MFB_1M in out vref vdd params: R1=1k R2=1G R5=1k C=2.2n
+R1 in n1 {R1}
+R2 n1 vref {R2}
+Ca n1 out {C}
+Cb n1 inv {C}
+R5 inv out {R5}
+XU vref inv vdd 0 out level2 Avol=1Meg GBW=1Meg Slew=0.5Meg Ilimit=25m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg
+.ends
+.subckt MFB_LT in out vref vdd params: R1=1k R2=1G R5=1k C=2.2n
+R1 in n1 {R1}
+R2 n1 vref {R2}
+Ca n1 out {C}
+Cb n1 inv {C}
+R5 inv out {R5}
+XU vref inv out vdd 0 0 LT6233
+.ends
+* chain order: Q 1.11 @ 37.1k, Q 1.11 @ 24.2k, Q 2.89 @ 47.2k, Q 2.91 @ 19.0k
+XA1 in a1 vref vdd MFB_AD R1=1.05k R2=5.49k R5=4.32k
+XA2 a1 a2 vref vdd MFB_AD R1=1.58k R2=8.87k R5=6.65k
+XA3 a2 a3 vref vdd MFB_AD R1=909 R2=374 R5=8.87k
+XA4 a3 ad vref vdd MFB_AD R1=2.32k R2=909 R5=22.1k
+XM1 in m1 vref vdd MFB_1M R1=1.05k R2=5.49k R5=4.32k
+XM2 m1 m2 vref vdd MFB_1M R1=1.58k R2=8.87k R5=6.65k
+XM3 m2 m3 vref vdd MFB_1M R1=909 R2=374 R5=8.87k
+XM4 m3 slow vref vdd MFB_1M R1=2.32k R2=909 R5=22.1k
+XL1 in l1 vref vdd MFB_LT R1=1.05k R2=5.49k R5=4.32k
+XL2 l1 l2 vref vdd MFB_LT R1=1.58k R2=8.87k R5=6.65k
+XL3 l2 l3 vref vdd MFB_LT R1=909 R2=374 R5=8.87k
+XL4 l3 lt vref vdd MFB_LT R1=2.32k R2=909 R5=22.1k
+.lib ADI.lib
+.lib LTC2.lib
+.lib UniversalOpAmp2.lib
+.ac dec 400 1k 1Meg
+.save V(in) V(vref) V(ad) V(slow) V(lt) V(a1) V(a2) V(a3)
+.meas AC ad_pk MAX mag(V(ad))
+.meas AC ad_lo WHEN mag(V(ad))=ad_pk/sqrt(2) CROSS=1
+.meas AC ad_hi WHEN mag(V(ad))=ad_pk/sqrt(2) CROSS=LAST
+.meas AC ad_20k FIND mag(V(ad)) AT 20k
+.meas AC ad_25k FIND mag(V(ad)) AT 25k
+.meas AC ad_30k FIND mag(V(ad)) AT 30k
+.meas AC ad_35k FIND mag(V(ad)) AT 35k
+.meas AC ad_40k FIND mag(V(ad)) AT 40k
+.meas AC ad_45k FIND mag(V(ad)) AT 45k
+.meas AC ad_10k FIND mag(V(ad)) AT 10k
+.meas AC ad_90k FIND mag(V(ad)) AT 90k
+.meas AC slow_pk MAX mag(V(slow))
+.meas AC slow_lo WHEN mag(V(slow))=slow_pk/sqrt(2) CROSS=1
+.meas AC slow_hi WHEN mag(V(slow))=slow_pk/sqrt(2) CROSS=LAST
+.meas AC slow_25k FIND mag(V(slow)) AT 25k
+.meas AC slow_30k FIND mag(V(slow)) AT 30k
+.meas AC slow_40k FIND mag(V(slow)) AT 40k
+.meas AC lt_25k FIND mag(V(lt)) AT 25k
+.meas AC lt_30k FIND mag(V(lt)) AT 30k
+.meas AC lt_35k FIND mag(V(lt)) AT 35k
+.meas AC lt_40k FIND mag(V(lt)) AT 40k
+.meas AC a1_pk MAX mag(V(a1))
+.meas AC a2_pk MAX mag(V(a2))
+.meas AC a3_pk MAX mag(V(a3))
+.end

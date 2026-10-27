@@ -61,7 +61,8 @@ On the AD8608 (10 MHz quad, cheaper) the same values give 20.1–20.4 dB across 
 ## Capacitors you can actually get (JLCPCB, checked 2026-10-27)
 - **JLC "Basic" caps in this range are X7R ±10%** (e.g. 1 nF C1523, 4.7 nF C1538). These are where the "10%" comes from. **Don't use X7R in a filter.** It drifts about ±15% over temperature, loses capacitance under DC bias, and it's piezoelectric: on a sub full of thruster vibration it turns knocks into signal, inside the hydrophone chain.
 - **C0G/NP0 ±5% is easy to get as an extended part.** For example, Yageo **CC0603JRNPO9BN472** (4.7 nF, 50 V, 0603) is **C576818**, with about 260k in stock at about $0.03. The FH 0402CG102J500NT (1 nF C0G ±5% 0402) is also stocked (~232k). Check the 1 nF part in 0603 from the same Yageo series (CC0603JRNPO9BN102) before ordering. Each unique extended part adds a small setup fee per order, and this design has only two.
-- **±1% and ±2% C0G do exist at JLC, but only in 0805/1206, at low stock and 5–10× the price.** For example, CC0805FKNPO9BN472 (4.7 nF ±1%) is C541577 with ~8.5k in stock at ~$0.23. That's usable for a few boards if needed.
+- **Update:** 2.2 nF is stocked as ±1% C0G in **0603** (C576780, ~11.9k, ~$0.047). The [[8th-Order Quad Filter - Final Design]] uses that one value everywhere.
+- **For other values, ±1% and ±2% C0G only showed up in 0805/1206, at low stock and 5–10× the price.** For example, CC0805FKNPO9BN472 (4.7 nF ±1%) is C541577 with ~8.5k in stock at ~$0.23. That's usable for a few boards if needed.
 - PCBWay sources from distributors such as Digi-Key or Mouser or takes customer-supplied parts, so tolerance there is whatever you order.
 
 ## What 5% caps cost in channel matching (Monte Carlo, 500 runs)
